@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   LayoutDashboard,
   FileText,
@@ -5,16 +6,17 @@ import {
   GitCompare,
   BookOpen,
   StickyNote,
-  Quote,
   Settings,
-  Plus,
   Search,
   Sparkles,
 } from "lucide-react";
 
 import "./App.css";
+import Papers from "./pages/Papers.jsx";
 
 function App() {
+  const [currentPage, setCurrentPage] = useState("dashboard");
+
   return (
     <div className="app">
 
@@ -27,12 +29,20 @@ function App() {
 
         <nav className="sidebar-nav">
 
-          <button className="nav-item active">
+          <button
+            className={`nav-item ${currentPage === "dashboard" ? "active" : ""}`}
+            onClick={() => setCurrentPage("dashboard")}
+            aria-current={currentPage === "dashboard" ? "page" : undefined}
+          >
             <LayoutDashboard size={20} />
             <span>Dashboard</span>
           </button>
 
-          <button className="nav-item">
+          <button
+            className={`nav-item ${currentPage === "papers" ? "active" : ""}`}
+            onClick={() => setCurrentPage("papers")}
+            aria-current={currentPage === "papers" ? "page" : undefined}
+          >
             <FileText size={20} />
             <span>Papers</span>
           </button>
@@ -70,6 +80,10 @@ function App() {
 
       {/* Main Content */}
       <main className="main-content">
+        {currentPage === "papers" ? (
+          <Papers />
+        ) : (
+          <>
 
         {/* Welcome */}
         <section className="welcome-section">
@@ -104,7 +118,11 @@ function App() {
 
 
           {/* Search Papers */}
-          <button className="feature-card">
+          <button
+            className="feature-card"
+            type="button"
+            onClick={() => setCurrentPage("papers")}
+          >
 
             <div className="feature-icon green">
               <Search size={20} />
@@ -187,7 +205,8 @@ function App() {
           </div>
 
         </section>
-
+          </>
+        )}
       </main>
 
     </div>
