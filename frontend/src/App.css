@@ -16,14 +16,21 @@ input {
 
 .app {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
 }
 
 /* Sidebar */
 
 .sidebar {
   width: 268px;
-  min-height: 100vh;
+  flex: 0 0 268px;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  overflow-y: auto;
   background: #171625;
   color: white;
   padding: 18px 20px;
@@ -95,9 +102,12 @@ input {
 .main-content {
   flex: 1;
   min-width: 0;
-  width: 100%;
+  width: auto;
+  height: 100vh;
+  height: 100dvh;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
   padding: 42px 60px;
-  max-width: 1400px;
 }
 
 .welcome-section h1 {
@@ -314,7 +324,7 @@ input {
 @media (max-width: 700px) {
   .sidebar {
     width: 74px;
-    min-width: 74px;
+    flex-basis: 74px;
     padding: 18px 10px;
   }
 
