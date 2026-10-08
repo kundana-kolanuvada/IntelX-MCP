@@ -1,7 +1,11 @@
+from contextlib import asynccontextmanager
+from typing import List
+
 from fastapi import FastAPI, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import List
+
+from mcp_client.mcp_client import ArxivMCPClient
 
 
 class Paper(BaseModel):
@@ -18,10 +22,21 @@ class SearchResponse(BaseModel):
     papers: List[Paper]
 
 
+mcp_client = ArxivMCPClient()
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await mcp_client.connect()
+    yield
+    await mcp_client.close()
+
+
 app = FastAPI(
     title="IntelX API",
     description="Backend API for IntelX Research Assistant",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan
 )
 
 
@@ -42,7 +57,7 @@ def root():
 
 
 @app.get("/api/search", response_model=SearchResponse)
-def search_papers(
+async def search_papers(
     q: str = Query(
         ...,
         min_length=2,
@@ -58,7 +73,16 @@ def search_papers(
             detail="Search query cannot be empty"
         )
 
-    return {
-        "query": q,
-        "papers": []
-    }
+    try:
+        result = await mcp_client.search_papers(
+            query=q,
+            max_results=5
+        )
+
+        return result
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"MCP search failed: {str(e)}"
+        )
